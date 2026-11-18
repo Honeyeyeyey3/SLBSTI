@@ -14,7 +14,8 @@ const scrypt = promisify(crypto.scrypt);
 
 const PORT = Number(process.env.PORT) || 3000;
 const PROD = process.env.NODE_ENV === 'production';
-const INDEX = path.join(__dirname, 'public', 'index.html');
+const INDEX = [path.join(__dirname, 'index.html'), path.join(__dirname, 'public', 'index.html')]
+  .find((f) => fs.existsSync(f)) || path.join(__dirname, 'index.html');
 
 /* ---------- storage ---------- */
 function fileStore(file) {
