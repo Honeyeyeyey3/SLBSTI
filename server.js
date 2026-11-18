@@ -14,8 +14,17 @@ const scrypt = promisify(crypto.scrypt);
 
 const PORT = Number(process.env.PORT) || 3000;
 const PROD = process.env.NODE_ENV === 'production';
-const INDEX = [path.join(__dirname, 'index.html'), path.join(__dirname, 'public', 'index.html')]
-  .find((f) => fs.existsSync(f)) || path.join(__dirname, 'index.html');
+function findIndex() {
+  const dirs = [__dirname, path.join(__dirname, 'public')];
+  for (const d of dirs) { const f = path.join(d, 'index.html'); if (fs.existsSync(f)) return f; }
+  for (const d of dirs) {
+    try {
+      const h = fs.readdirSync(d).filter((n) => /\.html?$/i.test(n)).sort();
+      if (h.length) return path.join(d, h[0]);
+    } catch (e) { /* folder missing */ }
+  }
+  return path.join(__dirname, 'index.html');
+}
 
 /* ---------- storage ---------- */
 function fileStore(file) {
@@ -216,8 +225,8 @@ function readBody(req) {
   });
 }
 function serveIndex(req, res) {
-  fs.readFile(INDEX, (err, buf) => {
-    if (err) { res.writeHead(500); res.end('Website file missing'); return; }
+  fs.readFile(findIndex(), (err, buf) => {
+    if (err) { console.error('No .html website file found in', __dirname); res.writeHead(500); res.end('Website file missing'); return; }
     res.writeHead(200, Object.assign({ 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' }, HEADERS));
     res.end(req.method === 'HEAD' ? undefined : buf);
   });
