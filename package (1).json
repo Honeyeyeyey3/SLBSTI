@@ -1,0 +1,16 @@
+{
+  "name": "slbsti-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SLBSTI institute website with admin panel, student portal and fee payment QR",
+  "main": "slbsti-final.js",
+  "scripts": {
+    "start": "node slbsti-final.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pg": "^8.11.0"
+  }
+}
